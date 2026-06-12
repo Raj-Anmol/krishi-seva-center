@@ -7,6 +7,11 @@ yarn-error.log*
 pnpm-debug.log*
 lerna-debug.log*
 
+# Environment variables (Crucial Security Fix)
+.env
+.env.production
+.env.development
+
 # Dependencies (This automatically covers frontend/node_modules and any others)
 node_modules/
 dist/

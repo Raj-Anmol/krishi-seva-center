@@ -11,9 +11,11 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [mandiPrices, setMandiPrices] = useState([]);
   const [openFaq, setOpenFaq] = useState(null);
+  
+  // 🌐 CLOUD PROVISION ROUTING PIPELINE
   const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
-  // 🗄️ ADVANCED CS FIX: LOADING HISTORY AND ANALYTICS FROM BROWSER HARD DISK STORAGE ON INITIAL BOOT
+  // 🗄️ LOCAL DISK HYDRATION HOOKS
   const [scanHistory, setScanHistory] = useState(() => {
     const savedHistory = localStorage.getItem('krishi_scan_history');
     return savedHistory ? JSON.parse(savedHistory) : [];
@@ -133,7 +135,6 @@ function App() {
       .catch(err => console.error("Mandi fetch failed:", err));
   }, []);
 
-  // 💾 EFFECT: AUTO-SAVING EVERY NEW SCAN TO DISK (LOCAL STORAGE) WHENEVER STATE UPDATES
   useEffect(() => {
     localStorage.setItem('krishi_scan_history', JSON.stringify(scanHistory));
   }, [scanHistory]);
@@ -166,25 +167,19 @@ function App() {
       });
       const data = await response.json();
       
-      const currentDisease = lang === 'hi' ? data.disease_hi : data.disease_en;
-      const currentRemedy = lang === 'hi' ? data.remedy_hi : data.remedy_en;
-
-      setPrediction({
-        disease: currentDisease,
-        confidence: data.confidence,
-        remedy: currentRemedy
-      });
+      // Reactive Language Fix: Save the entire raw output payload structure
+      setPrediction(data);
 
       const timestamp = new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit', second: '2-digit' });
       const newLog = {
         time: timestamp,
         crop: selectedCrop.toUpperCase(),
-        result: currentDisease
+        data: data 
       };
       
       setScanHistory(prevHistory => [newLog, ...prevHistory]);
 
-      const isHealthy = currentDisease.toLowerCase().includes("healthy") || currentDisease.includes("स्वस्थ");
+      const isHealthy = data.disease_en.toLowerCase().includes("healthy") || data.disease_hi.includes("स्वस्थ");
       setAnalytics(prev => {
         const newTotal = prev.total + 1;
         const newHealthy = isHealthy ? prev.healthy + 1 : prev.healthy;
@@ -203,7 +198,10 @@ function App() {
 
   const shareOnWhatsApp = () => {
     if (!prediction) return;
-    const message = `*${text[lang].resultTitle}*\n\n*${text[lang].disease}* ${prediction.disease}\n*Confidence:* ${prediction.confidence}\n\n*${text[lang].remedy}* ${prediction.remedy}\n\n_Sent via Live Krishi AI Engine_`;
+    const currentDisease = lang === 'hi' ? prediction.disease_hi : prediction.disease_en;
+    const currentRemedy = lang === 'hi' ? prediction.remedy_hi : prediction.remedy_en;
+    
+    const message = `*${text[lang].resultTitle}*\n\n*${text[lang].disease}* ${currentDisease}\n*Confidence:* ${prediction.confidence}\n\n*${text[lang].remedy}* ${currentRemedy}\n\n_Sent via Live Krishi AI Engine_`;
     window.open(`https://api.whatsapp.com/send?text=${encodeURIComponent(message)}`, '_blank');
   };
 
@@ -211,7 +209,6 @@ function App() {
     setOpenFaq(openFaq === index ? null : index);
   };
 
-  // 🗑️ DISK CLEANER LOGIC
   const clearStorageData = () => {
     if (window.confirm("क्या आप सचमुच पूरा इतिहास मिटाना चाहते हैं?")) {
       localStorage.removeItem('krishi_scan_history');
@@ -293,10 +290,10 @@ function App() {
         {prediction && (
           <div className="card result-card">
             <h2>{text[lang].resultTitle}</h2>
-            <p><strong>{text[lang].disease}</strong> {prediction.disease}</p>
+            <p><strong>{text[lang].disease}</strong> {lang === 'hi' ? prediction.disease_hi : prediction.disease_en}</p>
             <p><strong>Confidence:</strong> {prediction.confidence}</p>
             <div className="remedy-box">
-              <p><strong>{text[lang].remedy}</strong> {prediction.remedy}</p>
+              <p><strong>{text[lang].remedy}</strong> {lang === 'hi' ? prediction.remedy_hi : prediction.remedy_en}</p>
             </div>
             <button onClick={shareOnWhatsApp} className="whatsapp-share-btn">
               {text[lang].whatsappBtn}
@@ -311,7 +308,7 @@ function App() {
             <h3>{text[lang].weatherTitle}</h3>
             <div className="weather-grid">
               <div className="weather-item">📊 <b>{text[lang].temp}</b> {weather.temp}</div>
-              <div className="weather-item">💧 <b>{text[lang].humidity}</b> {weather.humidity}</div>
+              <div className="weather-item">💧 <b>{text[lang].humidity}</b> {weather.humidity}%</div>
               <div className="weather-item">💨 <b>{text[lang].wind}</b> {weather.wind}</div>
             </div>
             <p style={{marginTop: '15px', fontSize: '14px', color: '#1565c0', fontWeight: 'bold'}}>📡 Status: {weather.condition}</p>
@@ -383,7 +380,11 @@ function App() {
                 <tr key={index}>
                   <td><span className="time-badge">⏱️ {log.time}</span></td>
                   <td><b>{log.crop}</b></td>
-                  <td><span className="result-badge">{log.result}</span></td>
+                  <td>
+                    <span className="result-badge">
+                      {log.data ? (lang === 'hi' ? log.data.disease_hi : log.data.disease_en) : log.result}
+                    </span>
+                  </td>
                 </tr>
               ))}
             </tbody>

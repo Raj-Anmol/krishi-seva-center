@@ -1,3 +1,4 @@
+import os
 from fastapi import FastAPI, File, UploadFile, Form
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
@@ -30,7 +31,6 @@ CROPS_DATABASE = {
 @app.get("/api/weather")
 async def get_live_weather():
     try:
-        # Patna Lat/Lon coordinates par live weather fetch karna
         url = "https://api.open-meteo.com/v1/forecast?latitude=25.5948&longitude=85.1376&current=temperature_2m,relative_humidity_2m,wind_speed_10m,weather_code"
         async with httpx.AsyncClient() as client:
             response = await client.get(url)
@@ -38,11 +38,10 @@ async def get_live_weather():
             
         current = data["current"]
         temp = f"{round(current['temperature_2m'])}°C"
-        humidity = f"{current['relative_humidity_2m']}%"
+        humidity = f"{current['relative_humidity_2m']}"
         wind = f"{current['wind_speed_10m']} km/h"
         code = current['weather_code']
         
-        # WMO Weather codes ko human readable banana
         condition = "Clear Sky / साफ़ मौसम"
         if code in [1, 2, 3]: condition = "Partly Cloudy / हल्के बादल"
         elif code in [51, 53, 55, 61, 63, 65, 80, 81]: condition = "Rainy / बारिश की संभावना"
@@ -55,7 +54,6 @@ async def get_live_weather():
 # 🌐 FEATURE 2: LIVE COMMODITY MANDI PRICE INDEX
 @app.get("/api/mandi")
 async def get_live_mandi():
-    # Real production environments me Gov API down hone par safe fallback arrays auto-fluctuate karte hain
     base_rates = {"wheat": 2420, "rice": 2250, "cotton": 6850, "sugarcane": 380, "maize": 2050, "tomato": 2400, "potato": 1650, "brinjal": 1350}
     
     mandi_data = []
@@ -72,7 +70,6 @@ async def get_live_mandi():
     
     for crop in crops_meta:
         base = base_rates[crop["id"]]
-        # Algorithm real market updates simulation index apply karta hai
         rand_shift = random.randint(-40, 60)
         min_p = base + rand_shift
         max_p = min_p + random.randint(150, 300)
@@ -100,4 +97,9 @@ async def predict(file: UploadFile = File(...), crop: str = Form(...)):
     }
 
 if __name__ == "__main__":
-    uvicorn.run(app, host="localhost", port=9000)
+    # Reads PORT from environment/backend .env; defaults to 9000 locally
+    server_port = int(os.getenv("PORT", 9000))
+    # Reads HOST from environment/backend .env; defaults to "localhost" locally
+    server_host = os.getenv("HOST", "localhost")
+    
+    uvicorn.run(app, host=server_host, port=server_port)
