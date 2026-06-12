@@ -11,6 +11,7 @@ function App() {
   const [weather, setWeather] = useState(null);
   const [mandiPrices, setMandiPrices] = useState([]);
   const [openFaq, setOpenFaq] = useState(null);
+  const API_BASE_URL = import.meta.env.VITE_API_URL || "http://localhost:9000";
 
   // 🗄️ ADVANCED CS FIX: LOADING HISTORY AND ANALYTICS FROM BROWSER HARD DISK STORAGE ON INITIAL BOOT
   const [scanHistory, setScanHistory] = useState(() => {
@@ -121,12 +122,12 @@ function App() {
   ];
 
   useEffect(() => {
-    fetch("http://localhost:9000/api/weather")
+    fetch(`${API_BASE_URL}/api/weather`)
       .then(res => res.json())
       .then(data => setWeather(data))
       .catch(err => console.error("Weather fetch failed:", err));
 
-    fetch("http://localhost:9000/api/mandi")
+    fetch(`${API_BASE_URL}/api/mandi`)
       .then(res => res.json())
       .then(data => setMandiPrices(data))
       .catch(err => console.error("Mandi fetch failed:", err));
@@ -159,7 +160,7 @@ function App() {
     formData.append("crop", selectedCrop);
 
     try {
-      const response = await fetch("http://localhost:9000/predict", {
+      const response = await fetch(`${API_BASE_URL}/predict`, {
         method: "POST",
         body: formData,
       });
