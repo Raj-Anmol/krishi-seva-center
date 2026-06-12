@@ -22,6 +22,18 @@
 
 ---
 
+## 📸 App Screenshot
+
+<div align="center">
+
+![Krishi Seva Center - Live App Preview](./frontend/public/hero.png)
+
+*Live view of the app showing Crop Selection, Real-time Patna Weather Station, and Today's Mandi Bhav (Live Commodity Prices)*
+
+</div>
+
+---
+
 ## 🌐 Deployment Links
 
 | Service | URL |
