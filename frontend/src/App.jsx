@@ -184,7 +184,7 @@ function App() {
         const newTotal = prev.total + 1;
         const newHealthy = isHealthy ? prev.healthy + 1 : prev.healthy;
         const newDiseased = !isHealthy ? prev.diseased + 1 : prev.diseased;
-        const newRatio = Math.round((newHealthy / newTotal) * 100);
+        const newRatio = newTotal > 0 ? Math.round((newHealthy / newTotal) * 100) : 0;
         return { total: newTotal, healthy: newHealthy, diseased: newDiseased, ratio: newRatio };
       });
 

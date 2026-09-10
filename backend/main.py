@@ -1,5 +1,5 @@
 import os
-from fastapi import FastAPI, File, UploadFile, Form
+from fastapi import FastAPI, File, UploadFile, Form, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 import uvicorn
 import random
@@ -9,7 +9,7 @@ app = FastAPI()
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],
+    allow_origins=["http://localhost:5173", "http://127.0.0.1:5173"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -23,11 +23,14 @@ CROPS_DATABASE = {
     "maize": [{"en": "Maize Leaf Blight", "hi": "मक्के का लीफ ब्लाइट रोग", "rem_en": "Spray Mancozeb fungicide.", "rem_hi": "मैंकोजेब कवकनाशी का छिड़काव करें।"}],
     "tomato": [{"en": "Tomato Early Blight", "hi": "टमाटर का अगेती झुलसा रोग", "rem_en": "Apply organic copper fungicide.", "rem_hi": "कॉपर फंगसीसाइड का छिड़काव करें।"}],
     "potato": [{"en": "Potato Late Blight", "hi": "आलू का पछेती झुलसा रोग", "rem_en": "Avoid overhead irrigation.", "rem_hi": "पत्तों पर सीधे पानी डालने से बचें।"}],
-    "brinjal": [{"en": "Brinjal Little Leaf Disease", "hi": "बैंगन का छोटी पत्ती रोग", "rem_en": "Spray neem-based insecticide.", "rem_hi": "नीम के तेल का स्प्रे करें।"}
-    ]
+    "brinjal": [{"en": "Brinjal Little Leaf Disease", "hi": "बैंगन का छोटी पत्ती रोग", "rem_en": "Spray neem-based insecticide.", "rem_hi": "नीम के तेल का स्प्रे करें।"}]
 }
 
 # 🌐 FEATURE 1: LIVE WEATHER FROM OPEN-METEO API
+@app.get("/api/health")
+async def health():
+    return {"status": "ok", "message": "Krishi Seva Center API is running"}
+
 @app.get("/api/weather")
 async def get_live_weather():
     try:
@@ -81,9 +84,17 @@ async def get_live_mandi():
         })
     return mandi_data
 
+ALLOWED_EXTENSIONS = {"png", "jpg", "jpeg", "webp"}
+
+def allowed_file(filename: str) -> bool:
+    return "." in filename and filename.rsplit(".", 1)[1].lower() in ALLOWED_EXTENSIONS
+
 @app.post("/predict")
 async def predict(file: UploadFile = File(...), crop: str = Form(...)):
-    _ = await file.read()
+    if not allowed_file(file.filename):
+        raise HTTPException(status_code=400, detail="Invalid file type. Only PNG, JPG, JPEG, WebP allowed.")
+    
+    content = await file.read()
     crop_pool = CROPS_DATABASE.get(crop, CROPS_DATABASE["tomato"])
     selected_issue = random.choice(crop_pool)
     confidence_val = random.uniform(94.5, 99.1)
