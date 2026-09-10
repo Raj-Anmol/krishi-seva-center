@@ -57,15 +57,19 @@
 - Displays temperature, humidity, wind speed, and weather condition
 - Includes a **Smart Agro Alert** warning farmers about bad weather conditions (e.g., stop pesticide spraying during rain/storms)
 
-### 📊 3. Live Mandi Bhav (Commodity Prices)
-- Daily commodity price index for 8 major crops
-- Prices displayed in ₹/quintal format with dynamic fluctuations
-- Helps farmers make informed selling decisions
-
-### 📈 4. Farm Health Analytics
+### 📈 4. Farm Health Analytics (Enhanced)
 - Tracks total scans, healthy vs. diseased detections
-- Visual health score with animated progress bar
-- Persisted locally via browser storage across sessions
+- **Visual health score with animated progress bar**
+- **Persisted locally via browser storage across sessions**
+- **Enhanced tracking: Last harvest date & Soil pH monitoring**
+- **GPS-based location analytics** for weather-pattern correlations
+
+### 🌍 4b. GPS & Location Features (Advanced)
+- **Auto-detects user location** via HTML5 Geolocation
+- **Dynamic weather API** with latitude/longitude parameters
+- **Falls back to Patna coordinates** if GPS unavailable
+- **Location error handling** with graceful fallback
+- **Location data stored** in scan history for pattern analysis
 
 ### 🌐 5. Bilingual Interface (Hindi / English)
 - Full toggle between Hindi (हिंदी) and English
@@ -90,10 +94,11 @@
 ### Frontend
 | Technology | Version | Purpose |
 |---|---|---|
-| React.js | ^19.2.6 | UI Framework |
-| Vite | ^8.0.12 | Build Tool & Dev Server |
+| React.js | ^18.3.0 | UI Framework |
+| Vite | ^5.2.0 | Build Tool & Dev Server |
 | Vanilla CSS | — | Custom Styling & Responsive Layout |
 | React Hooks | useState, useEffect | State & Side-effect Management |
+| ESLint | ^8.57.0 | Code Linting |
 
 ### Backend
 | Technology | Purpose |
@@ -217,21 +222,28 @@ npm run dev
 
 - ✅ Clean, card-based responsive layout (mobile-friendly)
 - ✅ Green-themed agricultural design (`#2e7d32`, `#4caf50`)
-- ✅ Animated health progress bar
+- ✅ **Modern animated UI with fade-in-up and pulse effects**
+- ✅ **GPS-based dynamic weather location detection**
+- ✅ **Enhanced analytics with last harvest & soil pH tracking**
+- ✅ **Shop item hover animations** (lift effect + shadow)
+- ✅ **Animated health progress bar**
 - ✅ Red alert banner for weather warnings
 - ✅ Responsive grid for mandi price table
 - ✅ Language switcher with active state highlight
+- ✅ Mobile-optimized max-width 400px breakpoints
 
 ---
 
 ## 🔮 Future Improvements
 
-- [ ] Integrate a real CNN/ML model for disease detection (currently rule-based)
-- [ ] Add GPS-based auto-location weather (not just Patna hardcoded)
+- [x] **Integrate GPS-based auto-location weather** (completed - auto-detects user location)
 - [ ] Connect to official government Agmarknet API for actual mandi prices
 - [ ] Add push notifications for weather alerts
-- [ ] PWA support for offline access in low-connectivity rural areas
+- [ ] **PWA support for offline access** in low-connectivity rural areas
 - [ ] Add more regional languages (Bhojpuri, Maithili)
+- [ ] Integrate real CNN/ML model for disease detection (currently rule-based)
+- [ ] Add soil health card integration with pH tracking
+- [ ] Multi-language weather condition descriptions
 
 ---
 
@@ -260,6 +272,61 @@ This project is open source and available under the [MIT License](LICENSE).
 
 Made with ❤️ for the farmers of India 🇮🇳
 
-*किसान की मुस्कान, हमारी पहचान।*
+*किसान की मुस्कान, हमारी पहचान。*
+
+---
+
+## 🚀 Advanced Features
+
+### GPS-Based Dynamic Weather
+The app now auto-detects your location using HTML5 Geolocation and fetches real-time weather from Open-Meteo API with your exact coordinates. Falls back to Patna (25.5948°N, 85.1376°E) if GPS is unavailable or denied.
+
+### Enhanced Farm Analytics
+- **Last harvest tracking**: Auto-updates every 5 scans, shows last harvest date
+- **Soil pH monitoring**: Track soil health over time, essential for crop planning
+- **Pattern analysis**: Location data stored with each scan for weather-crop correlation
+
+### Modern UI/UX
+- **Fade-in-up animations** on page load for all cards and items
+- **Pulse animation** keyframes for visual interest
+- **Shop item hover effects**: Items lift with enhanced shadow on hover
+- **Mobile-first responsive design**: Optimized for devices up to 400px wide
+- **Smooth transitions** throughout all interactive elements
+
+### Technical Improvements
+- **React 18 + Vite 5**: Stable, production-ready versions
+- **File type validation**: Only PNG, JPG, JPEG, WebP allowed for uploads
+- **CORS security**: Restricted to localhost origins for development
+- **Division-by-zero protection**: Analytics ratio safely handles edge cases
+- **Backend Python syntax**: Fixed missing comma in CROPS_DATABASE
+
+---
+
+<div align="center">
+
+**Raj Anmol**  
+*B.Tech Computer Science | AI & Cloud Computing Intern*  
+*Edunet Foundation × AICTE × IBM SkillsBuild*
+
+[![GitHub](https://img.shields.io/badge/GitHub-Raj--Anmol-black?style=flat-square&logo=github)](https://github.com/Raj-Anmol)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-raj--anmol-0077B5?style=flat-square&logo=linkedin)](https://www.linkedin.com/in/raj-anmol/)
+
+</div>
+
+---
+
+## 📄 License
+
+This project is open source and available under the [MIT License](LICENSE).
+
+---
+
+<div align="center">
+
+Made with ❤️ for the farmers of India 🇮🇳
+
+*किसान की मुस्कान, हमारी पहचान。*
+
+</div>
 
 </div>
